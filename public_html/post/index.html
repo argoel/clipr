@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>ClipR</title>
+	<link rel="stylesheet" href="../static/lib/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div class="container">
+		<h1>Post Manager</h1>
+		<hr />
+		<div class="page"></div>
+	</div>
+
+	<script type="text/template" id="user-list-template">
+	<a href="#/new" class="btn btn-primary">New Post</a>
+	<hr />
+	<table class="table striped">
+		<thead>
+			<tr>
+				<th>store</th>
+				<th>image</th>
+				<th>text_w_offer</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<% _.each(posts, function(post) { %>
+				<tr>
+					<td><%= post.get('store').name %></td>
+					<td><img src=<%=post.get('imgurl') %> width="120"></td>
+					<td><%= post.get('text_w_offer') %></td>
+					<td><a href="#/edit/<%= post.id %>" class="btn">Edit</td>
+				</tr>
+			<% }); %>
+		</tbody>
+	</script>
+
+	<script type="text/template" id="edit-user-template">
+		<form class="edit-user-form" id="edit-user-form" name="edit-user-form" method="POST" enctype="multipart/form-data">
+			<legend><%= post ? 'Update' : 'Create' %> Post</legend>
+			<label>Store Name</label>
+			<select name="store">
+				<% _.each(stores, function(store) { %>
+					<option value= '<%= JSON.stringify(store) %>' >
+					<%= store.get('name') %>
+					</option>
+				<% }); %>
+			</select>
+
+			<label>text_w_offer</label>
+			<input type="text" name="text_w_offer" value="<%= post ? post.get('text_w_offer') : '' %>"/>
+			<label>image</label>
+			<input type="file" name='imgurl' id='imgurl' value="<%= post ? post.get('imgurl') : '' %>">
+			<hr />
+			<button type="submit" class="btn"><%= post ? 'Update' : 'Create' %></button>
+			<% if(post) { %>
+				<input type="hidden" name="id" value="<%= post.id %>" />
+				<button type="button" class="btn btn-danger delete">Delete</button>
+			<% }; %>
+		</form>
+	</script>
+
+	<script src="../static/js/lib/jquery/jquery-1.10.2.min.js"></script>
+	<script src="../static/js/lib/underscore/underscore-min.js"></script>
+	<script src="../static/js/lib/backbone/backbone-min.js"></script>
+
+	<script>
+
+		$.fn.serializeObject = function() {
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function() {
+				if (o[this.name] !== undefined) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push(this.value || '');
+				} else {
+					o[this.name] = this.value || '';
+				}
+			});
+			return o;
+		};
+
+
+		var Posts = Backbone.Collection.extend({
+			url: 'http://127.0.0.1:8000/api/v1/post/'
+			//url: '/users/'
+		});
+
+		var Post = Backbone.Model.extend({
+			urlRoot: 'http://127.0.0.1:8000/api/v1/post/'
+			//urlRoot: '/users/'
+		});
+
+		var Stores = Backbone.Collection.extend({
+			url: 'http://127.0.0.1:8000/api/v1/store/'
+
+		});
+
+		var PostList = Backbone.View.extend({
+			el: '.page',
+			render: function () {
+				var that = this;
+				var posts = new Posts();
+				posts.fetch({
+					success: function (posts) {
+						var template = _.template($('#user-list-template').html(), {posts: posts.models});
+						that.$el.html(template);
+					}
+				})
+			}
+
+		});
+
+
+		var EditPost = Backbone.View.extend({
+			el: '.page',
+			render: function (options) {
+				var that = this;
+				var stores = new Stores();
+				stores.fetch({
+					success: function (stores) {
+						if(options.id) {
+								alert("or here");
+							that.post = new Post({id: options.id});
+									that.post.fetch({
+										success: function (post) {
+											var template = _.template($('#edit-user-template').html(), 
+												{
+													post: post,
+													stores: stores.models
+												});
+											that.$el.html(template);
+										}
+									})
+									console.log(post);
+						} 
+						else {
+							alert(JSON.stringify(stores));
+							var template = _.template($('#edit-user-template').html(), 
+								{
+									post: null,
+									stores: stores.models
+								});
+							alert("template done here");
+							that.$el.html(template);
+						}
+					}
+				})
+
+			},
+			events: {
+				'submit .edit-user-form': 'savePost',
+				'click .delete': 'deletePost'
+			},
+			savePost: function (ev) {
+				ev.preventDefault();
+				alert("entered saveUser");
+				var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+				var data = new FormData($('#edit-user-form')[0]);
+				alert(data);
+				var imgurl = '';
+				$.ajax({
+					csrfmiddlewaretoken: csrf_token,
+					url: "http://127.0.0.1:8080/myapp/list/",
+					method: "POST",
+					data: data,
+					success: function(data){
+						imgurl="http://127.0.0.1:8080"+data;
+						//alert(imgurl);
+						var postDetails = $(ev.currentTarget).serializeObject();
+						var post = new Post();
+						postDetails.imgurl = imgurl;
+						var store = postDetails.store;
+						alert(store);
+						postDetails.store = jQuery.parseJSON(store);
+						alert(postDetails.imgurl);
+						post.save(postDetails, {
+						success: function (post) {
+						//console.log(user);
+						//router.navigate('', {trigger: true});
+						}
+						})
+					},
+					error: function(data){},
+					processData: false,
+					contentType: false,
+				});
+				return false;
+			},
+			deletePost: function (ev) {
+				this.post.destroy({
+					success: function () {
+						router.navigate('', {trigger: true});
+					}
+				})
+				return false;
+			}
+		});
+
+		var Router = Backbone.Router.extend({
+			routes: {
+				'': 'home',
+				'new': 'editPost',
+				'edit/:id': 'editPost'
+			}
+		});
+
+		var postList = new PostList();
+		var editPost = new EditPost();
+		var router = new Router();
+
+		router.on('route:home', function () {
+			postList.render();
+		});
+
+		router.on('route:editPost', function (id){
+			//console.log("id is" + id);
+			editPost.render({id: id});
+		});
+
+
+		Backbone.history.start();
+
+	</script>
+
+</body>
+</html>

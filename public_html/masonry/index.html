@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>ClipR</title>
+	<link rel="stylesheet" href="../static/lib/bootstrap/css/bootstrap.min.css">
+	<style>
+		.item {
+		width: 220px;
+		margin: 10px;
+		float: left;
+		}
+	</style>
+
+
+	<script>
+	$(function(){
+		$('#container').masonry({
+			// options
+			itemSelector : '.item',
+			columnWidth : 50
+		});
+	});
+
+	var $container = $('#container');
+	$container.imagesLoaded(function(){
+		$container.masonry({
+			itemSelector : '.item',
+			columnWidth : 50
+		});
+	});
+	</script>
+</head>
+
+<body>
+
+	<div id="container">
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/darbar_2.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/siamroyal.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/TheLobbyBar_012812.png"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/darbar_2.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/umami.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/dnalogo.png"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/TheLobbyBar_012812.png"></div>
+
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/darbar_2.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/siamroyal.jpeg"></div>
+
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/TheLobbyBar_012812.png"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/darbar_2.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/umami.jpeg"></div>
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/dnalogo.png"></div>
+
+		<div class="item"><img src="http://127.0.0.1:8080/media/documents/2014/04/23/darbarcoupon_1.jpeg"></div>
+
+	</div>
+	
+	<script src="../static/js/lib/masonry/jquery.masonry.min.js"></script>
+	<script src="../static/js/lib/jquery/jquery-1.10.2.min.js"></script>
+	<script src="../static/js/lib/underscore/underscore-min.js"></script>
+	<script src="../static/js/lib/backbone/backbone-min.js"></script>
+
+
+</body>
+</html>
