@@ -21,7 +21,8 @@
 			<tr>
 				<th>store</th>
 				<th>image</th>
-				<th>text_w_offer</th>
+				<th>title</th>
+				<th>desc</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -30,11 +31,13 @@
 				<tr>
 					<td><%= post.get('store').name %></td>
 					<td><img src=<%=post.get('imgurl') %> width="120"></td>
-					<td><%= post.get('text_w_offer') %></td>
+					<td><%= post.get('title') %></td>
+					<td><%= post.get('desc') %></td>
 					<td><a href="#/edit/<%= post.id %>" class="btn">Edit</td>
 				</tr>
 			<% }); %>
 		</tbody>
+	</table>
 	</script>
 
 	<script type="text/template" id="edit-user-template">
@@ -49,8 +52,8 @@
 				<% }); %>
 			</select>
 
-			<label>text_w_offer</label>
-			<input type="text" name="text_w_offer" value="<%= post ? post.get('text_w_offer') : '' %>"/>
+			<label>title</label>
+			<input type="text" name="title" value="<%= post ? post.get('desc') : '' %>"/>
 			<label>image</label>
 			<input type="file" name='imgurl' id='imgurl' value="<%= post ? post.get('imgurl') : '' %>">
 			<hr />
@@ -60,6 +63,8 @@
 				<button type="button" class="btn btn-danger delete">Delete</button>
 			<% }; %>
 		</form>
+		<label>desc</label>
+		<textarea name="desc" form="edit-user-form"></textarea>
 	</script>
 
 	<script src="../static/js/lib/jquery/jquery-1.10.2.min.js"></script>
@@ -124,7 +129,6 @@
 				stores.fetch({
 					success: function (stores) {
 						if(options.id) {
-								alert("or here");
 							that.post = new Post({id: options.id});
 									that.post.fetch({
 										success: function (post) {
@@ -139,13 +143,11 @@
 									console.log(post);
 						} 
 						else {
-							alert(JSON.stringify(stores));
 							var template = _.template($('#edit-user-template').html(), 
 								{
 									post: null,
 									stores: stores.models
 								});
-							alert("template done here");
 							that.$el.html(template);
 						}
 					}
@@ -158,10 +160,8 @@
 			},
 			savePost: function (ev) {
 				ev.preventDefault();
-				alert("entered saveUser");
 				var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 				var data = new FormData($('#edit-user-form')[0]);
-				alert(data);
 				var imgurl = '';
 				$.ajax({
 					csrfmiddlewaretoken: csrf_token,
@@ -170,18 +170,16 @@
 					data: data,
 					success: function(data){
 						imgurl="http://127.0.0.1:8080"+data;
-						//alert(imgurl);
 						var postDetails = $(ev.currentTarget).serializeObject();
 						var post = new Post();
 						postDetails.imgurl = imgurl;
 						var store = postDetails.store;
-						alert(store);
 						postDetails.store = jQuery.parseJSON(store);
-						alert(postDetails.imgurl);
 						post.save(postDetails, {
+						dataType:"text",
 						success: function (post) {
-						//console.log(user);
-						//router.navigate('', {trigger: true});
+							//console.log(user);
+							router.navigate('', {trigger: true});
 						}
 						})
 					},

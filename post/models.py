@@ -12,7 +12,8 @@ class Post(Document):
 
 	store = ReferenceField(Store)
 	imgurl = StringField()
-	text_w_offer = StringField()
+	title = StringField()
+	desc = StringField()
 	time_created = DateTimeField(default=datetime.datetime.now)
 	time_updated = DateTimeField(default=datetime.datetime.now)
 
