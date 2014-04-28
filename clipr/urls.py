@@ -2,6 +2,8 @@ from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 from store.api import *
 from post.api import *
+from user.api import *
+from clips.api import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -10,6 +12,8 @@ from post.api import *
 v1_api = Api(api_name='v1')
 v1_api.register(StoreResource())
 v1_api.register(PostResource())
+v1_api.register(UserResource())
+v1_api.register(ClipsResource())
 
 urlpatterns = patterns('',
     # Examples:

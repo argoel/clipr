@@ -1,6 +1,5 @@
-from post.models import *
+from user.models import *
 from clipr.models import BackBoneCompatibleResource
-from store.models import *
 
 from mongoengine import *
 
@@ -13,12 +12,11 @@ from tastypie_mongoengine import fields
 
 connect('clipr')
 
-class PostResource(BackBoneCompatibleResource):
-	store = fields.ReferenceField(to="store.api.StoreResource", attribute="store", full=True)
+class UserResource(BackBoneCompatibleResource):
 	class Meta:
-		queryset = Post.objects.all().order_by("-time_updated")
+		queryset = User.objects.all()
 		# print queryset
-		resource_name = 'post'
+		resource_name = 'users'
 		excludes = ['resource_uri', 'time_created', 'time_updated']
 		allowed_methods = ('get', 'post', 'put', 'delete', 'patch', 'options')
 		authorization = authorization.Authorization()

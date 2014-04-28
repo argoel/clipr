@@ -8,7 +8,7 @@
 
 <body>
 	<div class="container">
-		<h1>Post Manager</h1>
+		<a href="../post"><h1>Post Manager</h1></a>
 		<hr />
 		<div class="page"></div>
 	</div>
@@ -43,28 +43,43 @@
 	<script type="text/template" id="edit-user-template">
 		<form class="edit-user-form" id="edit-user-form" name="edit-user-form" method="POST" enctype="multipart/form-data">
 			<legend><%= post ? 'Update' : 'Create' %> Post</legend>
-			<label>Store Name</label>
-			<select name="store">
-				<% _.each(stores, function(store) { %>
-					<option value= '<%= JSON.stringify(store) %>' >
-					<%= store.get('name') %>
-					</option>
-				<% }); %>
-			</select>
-
-			<label>title</label>
-			<input type="text" name="title" value="<%= post ? post.get('desc') : '' %>"/>
-			<label>image</label>
-			<input type="file" name='imgurl' id='imgurl' value="<%= post ? post.get('imgurl') : '' %>">
+			<div class="non_desc" style="float:left">
+				<label>Store Name</label>
+				<select name="store">
+					<% _.each(stores, function(store) { %>
+						<option value= '<%= JSON.stringify(store) %>' >
+						<%= store.get('name') %>
+						</option>
+					<% }); %>
+				</select>
+				<label>title</label>
+				<input type="text" name="title" value="<%= post ? post.get('title') : '' %>" placeholder="2 for 1 Special"/><br>
+				<label>validity:Today</label>
+				<input type="text" name="validity" value="<%= post ? post.get('validity') : '' %>" placeholder="All Day, 3PM-6PM"/><br>
+				<label>cost</label>
+				<input type="number" step="0.01" name="cost" value="<%= post ? post.get('cost') : '' %>"/>
+				<label>image</label>
+				<div class="image-upload">
+				    <label for="file-input">
+			        <%= post ? '<img src="'+post.get('imgurl')+'"'+' width="100">' : '' %>
+				    </label>
+			    <input id="imgurl" name="imgurl" type="file"/>
+			</div>
 			<hr />
+			</div>
+			<div class="desc">
+				<label>desc</label>
+				<textarea rows="10" cols="50" name="desc" placeholder="Get an entree free at the purchase of 1, valid only on Daily Special, Today's special is Paneer Tikka Masala, most loved dish of our restaurant, shown in the image"><%= post ? post.get('desc') : '' %> 
+				</textarea>
+			</div>
 			<button type="submit" class="btn"><%= post ? 'Update' : 'Create' %></button>
 			<% if(post) { %>
 				<input type="hidden" name="id" value="<%= post.id %>" />
 				<button type="button" class="btn btn-danger delete">Delete</button>
 			<% }; %>
+
+
 		</form>
-		<label>desc</label>
-		<textarea name="desc" form="edit-user-form"></textarea>
 	</script>
 
 	<script src="../static/js/lib/jquery/jquery-1.10.2.min.js"></script>
@@ -130,17 +145,16 @@
 					success: function (stores) {
 						if(options.id) {
 							that.post = new Post({id: options.id});
-									that.post.fetch({
-										success: function (post) {
-											var template = _.template($('#edit-user-template').html(), 
-												{
-													post: post,
-													stores: stores.models
-												});
-											that.$el.html(template);
-										}
-									})
-									console.log(post);
+							that.post.fetch({
+								success: function (post) {
+									var template = _.template($('#edit-user-template').html(), 
+										{
+											post: post,
+											stores: stores.models
+										});
+									that.$el.html(template);
+								}
+							});
 						} 
 						else {
 							var template = _.template($('#edit-user-template').html(), 
@@ -174,6 +188,7 @@
 						var post = new Post();
 						postDetails.imgurl = imgurl;
 						var store = postDetails.store;
+						postDetails.cost = parseFloat(postDetails.cost);
 						postDetails.store = jQuery.parseJSON(store);
 						post.save(postDetails, {
 						dataType:"text",
@@ -181,7 +196,7 @@
 							//console.log(user);
 							router.navigate('', {trigger: true});
 						}
-						})
+						});
 					},
 					error: function(data){},
 					processData: false,

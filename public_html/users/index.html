@@ -8,19 +8,18 @@
 
 <body>
 	<div class="container">
-		<a href="../store"><h1>Store Manager</h1></a>
+		<a href="../users"><h1>User Manager</h1></a>
 		<hr />
 		<div class="page"></div>
 	</div>
 
 	<script type="text/template" id="user-list-template">
-	<a href="#/new" class="btn btn-primary">New Store</a>
+	<a href="#/new" class="btn btn-primary">New User</a>
 	<hr />
 	<table class="table striped">
 		<thead>
 			<tr>
 				<th>name</th>
-				<th>address</th>
 				<th>image</th>
 				<th></th>
 			</tr>
@@ -29,7 +28,6 @@
 			<% _.each(users, function(user) { %>
 				<tr>
 					<td><%= user.get('name') %></td>
-					<td><%= user.get('address')+' '+user.get('city')+' '+user.get('zipcode') %></td>
 					<td><img src=<%=user.get('imgurl') %> width="80"></td>
 					<td><a href="#/edit/<%= user.id %>" class="btn">Edit</td>
 				</tr>
@@ -42,15 +40,9 @@
 	<script type="text/template" id="edit-user-template">
 		
 		<form method='POST' class='edit-user-form' name='edit-user-form' id='edit-user-form' enctype='multipart/form-data' >
-			<legend><%= user ? 'Update' : 'Create' %> Store</legend>
-			<label>Store Name</label>
+			<legend><%= user ? 'Update' : 'Create' %> User</legend>
+			<label>User Name</label>
 			<input type="text" name="name" value="<%= user ? user.get('name') : '' %>" />
-			<label>address</label>
-			<input type="text" name="address" value="<%= user ? user.get('address') : '' %>" />
-			<label>city</label>
-			<input type="text" name="city" value="<%= user ? user.get('city') : '' %>" />
-			<label>zipcode</label>
-			<input type="text" name="zipcode" value="<%= user ? user.get('zipcode') : '' %>" />
 			<label>image</label>
 			<div class="image-upload">
 			    <label for="file-input">
@@ -97,12 +89,12 @@
 
 
 		var Users = Backbone.Collection.extend({
-			url: 'http://127.0.0.1:8000/api/v1/store/'
+			url: 'http://127.0.0.1:8000/api/v1/users/'
 			//url: '/users/'
 		});
 
 		var User = Backbone.Model.extend({
-			urlRoot: 'http://127.0.0.1:8000/api/v1/store/'
+			urlRoot: 'http://127.0.0.1:8000/api/v1/users/'
 			//urlRoot: '/users/'
 		});
 

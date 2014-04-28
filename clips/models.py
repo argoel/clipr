@@ -1,19 +1,14 @@
 from mongoengine import *
 from djangotoolbox.fields import ListField, EmbeddedModelField
 import datetime
+from user.models import *
+from post.models import *
 
-class Store(Document):
-	'''
-	Generic Class to Replicate Shopping Stores
-	Assuming single good sold in each store at fixed price
-	'''
+class Clips(Document):
 	def __unicode__(self):
 		return self.name
 
-	name = StringField()
-	address = StringField()
-	city = StringField()
-	zipcode = StringField()
-	imgurl = StringField()
+	post = ReferenceField(Post)
+	user = ReferenceField(User)
 	time_created = DateTimeField(default=datetime.datetime.now)
 	time_updated = DateTimeField(default=datetime.datetime.now)
