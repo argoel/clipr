@@ -55,9 +55,24 @@ Login page
 			return o;
 		};
 
+		var cururl = window.location.host;
+		var dataurl = '';
+		var imurl = '';
+		var hosturl = '';
+
+		if (cururl=='localhost') {
+			dataurl = 'http://127.0.0.1:8000';
+			imurl = 'http://127.0.0.1:8080';
+			hosturl = 'http://localhost';
+		}
+		else {
+			dataurl = 'http://data-clipr.pagekite.me';
+			imurl = 'http://img-clipr.pagekite.me';
+			hosturl = 'http://clipr.pagekite.me';
+		}
 
 		var Users = Backbone.Collection.extend({
-			url: 'http://127.0.0.1:8000/api/v1/users/'
+			url: dataurl+'/api/v1/users/'
 			//url: '/users/'
 		});
 

@@ -4,6 +4,7 @@ from store.api import *
 from post.api import *
 from user.api import *
 from clips.api import *
+from likes.api import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -14,6 +15,7 @@ v1_api.register(StoreResource())
 v1_api.register(PostResource())
 v1_api.register(UserResource())
 v1_api.register(ClipsResource())
+v1_api.register(LikesResource())
 
 urlpatterns = patterns('',
     # Examples:

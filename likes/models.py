@@ -4,7 +4,7 @@ import datetime
 from user.models import *
 from post.models import *
 
-class Clips(Document):
+class Likes(Document):
 	def __unicode__(self):
 		return self.post.title
 

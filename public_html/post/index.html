@@ -104,19 +104,35 @@
 			return o;
 		};
 
+		var cururl = window.location.host;
+		var dataurl = '';
+		var imurl = '';
+		var hosturl = '';
+
+		if (cururl=='localhost') {
+			dataurl = 'http://127.0.0.1:8000';
+			imurl = 'http://127.0.0.1:8080';
+			hosturl = 'http://localhost';
+		}
+		else {
+			dataurl = 'http://data-clipr.pagekite.me';
+			imurl = 'http://img-clipr.pagekite.me';
+			hosturl = 'http://clipr.pagekite.me';
+		}
+
 
 		var Posts = Backbone.Collection.extend({
-			url: 'http://127.0.0.1:8000/api/v1/post/'
+			url: dataurl+'/api/v1/post/'
 			//url: '/users/'
 		});
 
 		var Post = Backbone.Model.extend({
-			urlRoot: 'http://127.0.0.1:8000/api/v1/post/'
+			urlRoot: dataurl+'/api/v1/post/'
 			//urlRoot: '/users/'
 		});
 
 		var Stores = Backbone.Collection.extend({
-			url: 'http://127.0.0.1:8000/api/v1/store/'
+			url: dataurl+'/api/v1/store/'
 
 		});
 
@@ -179,11 +195,11 @@
 				var imgurl = '';
 				$.ajax({
 					csrfmiddlewaretoken: csrf_token,
-					url: "http://127.0.0.1:8080/myapp/list/",
+					url: imurl+"/myapp/list/",
 					method: "POST",
 					data: data,
 					success: function(data){
-						imgurl="http://127.0.0.1:8080"+data;
+						imgurl=imurl+data;
 						var postDetails = $(ev.currentTarget).serializeObject();
 						var post = new Post();
 						postDetails.imgurl = imgurl;

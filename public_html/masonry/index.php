@@ -13,7 +13,7 @@
 		margin: auto;
 		width: 200px;
 		margin: 5px;
-		border: 1px solid;
+		border: 2px dotted;
 		float: left;
 		width: 25%;
 		}
@@ -27,9 +27,13 @@
 			
 		}
 
+		.dropdown-toggle{
+			cursor: pointer; 
+			cursor: hand;
+		}
+
 		.profile_pic {
 			float: left;
-			
 		}
 
 		.store_name {
@@ -59,6 +63,23 @@
 		.clear {
 			clear: both;
 		}
+
+		.clips {
+			float:left;
+			padding-left:25px;
+			padding-top:5px;
+			cursor: pointer; 
+			cursor: hand;
+		}
+
+		.likes {
+			float:left;
+			padding-left:25px;
+			padding-top:5px;
+			cursor: pointer; 
+			cursor: hand;
+		}
+
 	</style>
 </head>
 
@@ -68,7 +89,7 @@
 <div class="container">
 	<div class="top-bar">
 		<div class="top-left" style="width:15%; float:left;">
-			<h1 style="color:#B00000  ;">ClipR</h1>
+			<h1 style="color:#B00000;cursor: pointer;cursor: hand;">ClipR</h1>
 		</div>
 		<div class="top-mid" style="float:left;width:50%;">
 			<form class="form-horizontal" role="search">
@@ -90,9 +111,9 @@
     <!-- Brand and toggle get grouped for better mobile display -->
 
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Recommended Clips</a></li>
-        <li><a href="#">All Clips</a></li>
-        <li><a href="#">My Clips</a></li>
+        <li class="active"><a href="#" data-toggle="pill" onclick="postList.render();">Recommended Clips</a></li>
+        <li><a href="#" data-toggle="pill" onclick="postList.render();">All Clips</a></li>
+        <li><a href="#"  data-toggle="pill" onclick="myclips();">My Clips</a></li>
       </ul>
   </div><!-- /.container-fluid -->
 </nav>
@@ -161,12 +182,15 @@
 											<img src="../static/img/reviews.jpeg" width="80">
 											<div style="float:right;"><font size="2">170</font></div>
 										</div>
-										<div class="likes" style="float:left;padding-left:25px;padding-top:5px;">
+										<div class="likes" onclick="saveLike('<%= post.id %>');">
 											<img src="../static/img/fblike.jpeg" width="30">
-											<div style="float:right;"><font size="2">19</font></div>
+											<div style="float:right;">
+												<font size="2">
+													<%= post.get('likecount')!=0 ? post.get('likecount') : '' %>
+												</font>
+											</div>
 										</div>
-										<div class="clips" style="float:left;padding-left:25px;padding-top:5px;" 
-										onclick="saveClip('<%= post.id %>');">
+										<div class="clips" onclick="saveClip('<%= post.id %>');">
 												<img src="../static/img/scissor.jpeg" width="40">
 												<div id="clipcount" name="clipcount" style="float:right;">
 													<font size="2">
@@ -209,29 +233,47 @@
 			return o;
 		};
 
+		var cururl = window.location.host;
+		var dataurl = '';
+		var imurl = '';
+		var hosturl = '';
+
+		if (cururl=='localhost') {
+			dataurl = 'http://127.0.0.1:8000';
+			imurl = 'http://127.0.0.1:8080';
+			hosturl = 'http://localhost';
+		}
+		else {
+			dataurl = 'http://data-clipr.pagekite.me';
+			imurl = 'http://img-clipr.pagekite.me';
+			hosturl = 'http://clipr.pagekite.me';
+		}
 
 		var Posts = Backbone.Collection.extend({
-			url: 'http://127.0.0.1:8000/api/v1/post/'
+			url: dataurl+'/api/v1/post/'
 			//url: '/users/'
 		});
 
 		var Post = Backbone.Model.extend({
-			urlRoot: 'http://127.0.0.1:8000/api/v1/post/'
+			urlRoot: dataurl+'/api/v1/post/'
 		});
 
 		var User = Backbone.Model.extend({
-			urlRoot: 'http://127.0.0.1:8000/api/v1/users/'
+			urlRoot: dataurl+'/api/v1/users/'
 			//url: '/users/'
 		});
 
 		var Clips = Backbone.Collection.extend({
-			url: 'http://127.0.0.1:8000/api/v1/clips/'
+			url: dataurl+'/api/v1/clips/'
 		});
 
 		var Clip = Backbone.Model.extend({
-			urlRoot: 'http://127.0.0.1:8000/api/v1/clips/'
+			urlRoot: dataurl+'/api/v1/clips/'
 		});
 
+		var Like = Backbone.Model.extend({
+			urlRoot: dataurl+'/api/v1/likes/'
+		});
 
 
 		var UserThis = Backbone.View.extend({
@@ -283,12 +325,56 @@
 										post.save(postData, {
 											dataType:"text",
 											success: function () {
+												postList.render();
 											}
 										})
 									}
 								});
 							}
 						});
+					}
+				});
+			},
+			savelike: function (pid, uid) {
+				var post = new Post({id: pid});
+				var user = new User({id: uid});
+				post.fetch({
+					success: function(post) {
+						user.fetch({
+							success: function(user) {
+								var data = {'user': user, 'post': post};
+								var like = new Like();
+								like.save(data, {
+									dataType:"text",
+									success: function () {
+										var likecount = post.get('likecount')+1;
+										var postData = {'id':post.id, 'likecount':likecount};
+										post.save(postData, {
+											dataType:"text",
+											success: function () {
+												postList.render();
+											}
+										})
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+
+		});
+
+		var ClipList = Backbone.View.extend({
+			el: '.page',
+			myclipsrender: function (userid) {
+				var that = this;
+				var clips = new Clips();
+				clips.fetch({
+					data: $.param({ user: userid, post_only: 'True'}),
+					success: function (posts) {
+						var template = _.template($('#user-list-template').html(), {posts: posts.models});
+						that.$el.html(template);
 					}
 				});
 			}
@@ -301,8 +387,10 @@
 		});
 
 		var postList = new PostList();
+		var clipList = new ClipList();
 		var userThis = new UserThis();
 		var router = new Router();
+
 
 		router.on('route:home', function () {
 			var $_GET = <?php echo json_encode($_GET); ?>;
@@ -318,19 +406,29 @@
 			postList.saveclip(pid, userid);
 		}
 
+		function saveLike(pid) {
+			var $_GET = <?php echo json_encode($_GET); ?>;
+			var userid = $_GET['userid'];
+			postList.savelike(pid, userid);
+		}
 
 		Backbone.history.start();
 
 		$(document).ready(function(){
-		var $page = $('#page');
-		$('img').imagesLoaded(function(){
-			$page.masonry({
-			itemSelector : '.item',
-			columnWidth : 1,
+			var $page = $('#page');
+			$('img').imagesLoaded(function(){
+				$page.masonry({
+				itemSelector : '.item',
+				columnWidth : 1,
+				});
 			});
 		});
-	});
 
+		function myclips() {
+			var $_GET = <?php echo json_encode($_GET); ?>;
+			var userid = $_GET['userid'];
+			clipList.myclipsrender(userid);
+		}
 	</script>
 
 </body>

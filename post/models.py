@@ -16,6 +16,7 @@ class Post(Document):
 	validity = StringField()
 	cost = FloatField()
 	clipcount = IntField(default=0)
+	likecount = IntField(default=0)
 	time_created = DateTimeField(default=datetime.datetime.now)
 	time_updated = DateTimeField(default=datetime.datetime.now)
 
