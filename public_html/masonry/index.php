@@ -8,14 +8,25 @@
 		body  {
 		    margin: 0; 
 		    padding: 0;
+		    background-color: #F3EEEE;
+		}
+
+		.top-bar {
+			padding-left:30px;
 		}
  		.item {
-		margin: auto;
-		width: 200px;
-		margin: 5px;
+		/*width: 230px;*/
+		margin:24px 7px 0 7px;
+		/*
 		border: 2px dotted;
+		border-color: #d1d1d1;
+		*/
 		float: left;
-		width: 25%;
+		background-color: #ffffff;
+		/*width: 18%;*/
+		cursor: pointer; 
+		cursor: hand;
+
 		}
 		.item-container {
 			
@@ -36,13 +47,23 @@
 			float: left;
 		}
 
+		.reviews{
+			display: none;
+		}
+
+		.clips{
+			display: none;
+		}
+
 		.store_name {
 
 		}
 
 		.mid-item {
-			padding-top:5px;
+			/*padding-top:5px;*/
+			padding-bottom:10px;
 			border-bottom: 1px solid;
+			border-color: #d1d1d1;
 		}
 
 		.mid-item img {
@@ -50,7 +71,8 @@
 			display: block;
 			margin: 0 auto;
 			padding-bottom: 5px;
-
+			width: 225px;
+			height: 225px;
 		}
 
 		.mid-item details {
@@ -58,6 +80,12 @@
 			display: block;
 			margin: 0 auto;
 			padding-bottom: 5px;
+		}
+
+		.bottom-item {
+			padding-left:10px;
+			padding-top:10px;
+			padding-bottom:10px;
 		}
 
 		.clear {
@@ -80,15 +108,24 @@
 			cursor: hand;
 		}
 
+		body .modal {
+			width: 250px;
+			margin-left: -150px;
+		}
+
+		body .modal .modal-body {
+			margin:auto;
+		}
+
 	</style>
 </head>
 
 <body>
 
 
-<div class="container">
+<div class="container" style="width:100%">
 	<div class="top-bar">
-		<div class="top-left" style="width:15%; float:left;">
+		<div class="top-left" style="width:15%;float:left;">
 			<h1 style="color:#B00000;cursor: pointer;cursor: hand;">ClipR</h1>
 		</div>
 		<div class="top-mid" style="float:left;width:50%;">
@@ -100,12 +137,12 @@
 		        <button type="submit" class="btn btn-default">Search</button>
 		    </form>
 		</div>
-		<div class="top-right" id="top-right" style="width:35%;float:left;padding-top:15px;">
+		<div class="top-right" id="top-right" style="width:25%;float:right;padding-top:15px;">
 		</div>
     </div>
 </div>
 <hr/>
-<div class="container">
+<div class="container" style="background-color:; width:100%;padding-left:20px;padding-right:20px;">
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -122,9 +159,9 @@
 </div>
 
 		<script type="text/template" id="user-this-template">
-		      <ul class="nav navbar-nav" style="float:left;">
+		      <ul class="nav navbar-nav" style="float:left;padding-top:10px;">
 		        <li class="dropdown">
-		          <c class="dropdown-toggle" data-toggle="dropdown"><%= user.get('name') %> <b class="caret"></b></c>
+		          <c class="dropdown-toggle" onclick='data-toggle="dropdown"'><%= user.get('name') %> <b class="caret"></b></c>
 		          <ul class="dropdown-menu">
 		            <li><a href="#">Action</a></li>
 		            <li><a href="#">Another action</a></li>
@@ -136,79 +173,102 @@
 		          </ul>
 		        </li>
 		      </ul>
-			<img src="<%= user.get('imgurl') %>" width="40" style="padding-left:10px;">
+			<img src="<%= user.get('imgurl') %>" width="60" style="padding-left:10px;">
 		</script>
 
 		<script type="text/template" id="user-list-template">
 				<% _.each(posts, function(post) { %>
-							<div class="item">
+							<div class="item" href="#item" data-toggle="modal" data-post='<%= JSON.stringify(post) %>'>
 								<div class="item-container">
-									<div class="top-item">
-										<div class="profile_pic">
-											<img src=<%=post.get('store').imgurl %> width="40">
-										</div>
-										<div class="non_pic">
-											<span class="store_name" style="padding-left:10px;">
-												<a href="#"><%= post.get('store').name %></a>
-											</span>
-											<div class="non_name" style="padding-top:5px;">
-												<span class="location" style="float:left;padding-left:10px;">
-													<%= post.get('store').city %>
-												</span>
-												<span class="distance" style="float:right; padding-right:10px;">
-													3 miles
-												</span>
-											</div>
-										</div>
+									<div class="reviews" style="float:left;padding-left:15px;width:30%;padding-top:10px;">
+										<img src="../static/img/reviews.jpeg" width="80" height="">
 									</div>
-
+									<div class="clips" style="float:right;padding-right:15px;width:10%;padding-top:5px;">
+										<img src="../static/img/scissor.jpeg" width="40" height="">
+									</div>
 									<div class="mid-item">
-										<div class="title" align="center" style="padding-bottom:5px;">
-											<%= post.get('title') %>
-										</div>
 										<img src=<%=post.get('imgurl') %>>
-										<div class="details" align="center">
-											<div class="validity" style="float:left;padding-left:10px;">
-												<font size="2">Valid : Today, <%= post.get('validity') %></font>
+										<div class="details" style="padding-left:10px;">
+											<div class="title" style="padding-bottom:5px;">
+												<%= post.get('title').length > 30 ?	post.get('title').substring(0,30) + '...' : post.get('title')%>
 											</div>
-											<div class="cost" style="float:right;padding-right:10px;">
-												<font size="2"><%= post.get('cost') ? "$"+post.get('cost') : '' %></font>
+											<div class="non_name">
+												<span class="store_name" style="float:left;">
+													<%= post.get('store').name %>
+												</span>
+												<span class="location" style="float:right;padding-right:10px;">
+													3 mi
+												</span>
 											</div>
 										</div>
 										<div class="clear"></div>
 									</div>
 									<div class="bottom-item">
-										<div class="reviews" style="float:left;padding-left:15px;width:30%;padding-top:10px;">
-											<img src="../static/img/reviews.jpeg" width="80">
-											<div style="float:right;"><font size="2">170</font></div>
-										</div>
-										<div class="likes" onclick="saveLike('<%= post.id %>');">
-											<img src="../static/img/fblike.jpeg" width="30">
-											<div style="float:right;">
-												<font size="2">
-													<%= post.get('likecount')!=0 ? post.get('likecount') : '' %>
-												</font>
+											<div class="validity" style="float:left;">
+												<font size="2">Valid : Today, <%= post.get('validity') %></font>
 											</div>
-										</div>
-										<div class="clips" onclick="saveClip('<%= post.id %>');">
-												<img src="../static/img/scissor.jpeg" width="40">
-												<div id="clipcount" name="clipcount" style="float:right;">
-													<font size="2">
-														<%= post.get('clipcount')!=0 ? post.get('clipcount') : '' %>
-													</font>
-												</div>
-										</div>
+											<div class="cost" style="float:right;padding-right:10px;">
+												<font size="2"><%= post.get('cost') ? "$"+post.get('cost') : '' %></font>
+											</div>
+											<div class="clear"></div>
 									</div>
 							</div>
 						</div>
 				<% }); %>
 		</script>
 
+		<div class="modal fade" id="item" role = "dialog">
+			<div class = "modal-dialog">
+				<div class = "modal-content">
+					<div class="modal-header">
+						<p>Clip It</p>
+					</div>
+					<div class = "modal-body">
+						<img id="image" style="width:225px; height:225px;">
+						<div class="details" style="padding-left:10px;">
+							<div class="title" id = "title" style="padding-bottom:5px;"></div>
+							<div class="non_name">
+								<span class="store_name" id="store_name" style="float:left;"></span>
+								<span class="location" style="float:right;padding-right:10px;">3 mi</span>
+							</div>
+						</div>
+						<div class="clear"></div>
+						<div class="bottom-item">
+							<div class="validity" style="float:left;">
+							<font size="2" id="valid"></font>
+							</div>
+							<div class="cost" style="float:right;padding-right:10px;">
+							<font size="2" id="cost"></font>
+							</div>
+							<div class="clear"></div>
+						</div>
+					</div>
+					<div class = "modal-footer">
+						<input type="hidden" name="pid" id="pid"/>
+						<a class="btn btn-primary" data-dismiss = "modal" onclick="saveclip($('#pid').val())">Clip</a>
+						<a class="btn btn-default" data-dismiss = "modal"> Close</a>
+					</div>
+				</div>
+			</div>
+		</div>
 	<script type="text/javascript" src="../static/js/lib/jquery/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="../static/lib/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/js/lib/masonry/jquery.masonry.min.js"></script>
 	<script src="../static/js/lib/underscore/underscore-min.js"></script>
 	<script src="../static/js/lib/backbone/backbone-min.js"></script>
+
+	<script>
+
+		$(document).on("click", ".item", function () {
+			var post = $(this).data('post');
+			$(".modal-body #title").html(post['title']);
+			$(".modal-body #image").attr({
+				src: post['imgurl']
+			})
+			$(".modal-body #store_name").html(post['store']['name']);
+			$(".modal-footer #pid").val(post['id']);
+		});
+	</script>
 
 	<script>
 
@@ -238,15 +298,15 @@
 		var imurl = '';
 		var hosturl = '';
 
-		if (cururl=='localhost') {
+		if (cururl=='pagekite') {
+			dataurl = 'http://data-clipr.pagekite.me';
+			imurl = 'http://img-clipr.pagekite.me';
+			hosturl = 'http://clipr.pagekite.me';			
+		}
+		else {
 			dataurl = 'http://127.0.0.1:8000';
 			imurl = 'http://127.0.0.1:8080';
 			hosturl = 'http://localhost';
-		}
-		else {
-			dataurl = 'http://data-clipr.pagekite.me';
-			imurl = 'http://img-clipr.pagekite.me';
-			hosturl = 'http://clipr.pagekite.me';
 		}
 
 		var Posts = Backbone.Collection.extend({
@@ -400,9 +460,10 @@
 			postList.render();
 		});
 
-		function saveClip(pid) {
+		function saveclip(pid) {
 			var $_GET = <?php echo json_encode($_GET); ?>;
 			var userid = $_GET['userid'];
+			//alert(pid);
 			postList.saveclip(pid, userid);
 		}
 
@@ -419,7 +480,7 @@
 			$('img').imagesLoaded(function(){
 				$page.masonry({
 				itemSelector : '.item',
-				columnWidth : 1,
+				columnWidth : 100,
 				});
 			});
 		});

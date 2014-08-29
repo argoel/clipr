@@ -10,10 +10,8 @@ from myproject.myapp.forms import DocumentForm
 
 def list(request):
     # Handle file upload
-    print "i am finally here"
     
     if request.method == 'POST':
-        print 'request method is POST'
         f = request.FILES.get('imgurl')
         newdoc = Document(docfile = f)
         newdoc.save()

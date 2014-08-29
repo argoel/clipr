@@ -40,4 +40,4 @@ class ClipsResource(BackBoneCompatibleResource):
 	    		post =  clip.data['post']
 	    		posts.append(post.data)
 	    	return posts
-	    return data
+	    return data['objects']

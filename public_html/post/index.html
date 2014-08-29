@@ -109,15 +109,15 @@
 		var imurl = '';
 		var hosturl = '';
 
-		if (cururl=='localhost') {
-			dataurl = 'http://127.0.0.1:8000';
-			imurl = 'http://127.0.0.1:8080';
-			hosturl = 'http://localhost';
-		}
-		else {
+		if (cururl=='pagekite') {
 			dataurl = 'http://data-clipr.pagekite.me';
 			imurl = 'http://img-clipr.pagekite.me';
 			hosturl = 'http://clipr.pagekite.me';
+		}
+		else {
+			dataurl = 'http://127.0.0.1:8000';
+			imurl = 'http://127.0.0.1:8080';
+			hosturl = 'http://localhost';
 		}
 
 
